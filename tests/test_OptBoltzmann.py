@@ -25,8 +25,8 @@ class TestMaximumEntropy(unittest.TestCase):
     def setUp(self):
         """Load test models"""
         self.sbmlfiles = ["../models/sbml/split_pathway.xml"]
-        self.sbmlmodels = [simplesbml.loadSBMLFile(sbmlfile) for sbmlfile in self.sbmlfiles]
         self.cobramodels = [cobra.io.read_sbml_model(sbmlfile) for sbmlfile in self.sbmlfiles]
+        self.sbmlmodels = [simplesbml.loadSBMLFile(sbmlfile) for sbmlfile in self.sbmlfiles]
 
     def test_maximum_entropy_pyomo_relaxed(self):
         """Test against analytic solution"""
