@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Feb 25 2021
+Created on Mon Feb 25 2021.
 
 @author: Ethan King
 @author: Jeremy Zucker
@@ -8,18 +8,13 @@ Created on Mon Feb 25 2021
 
 import itertools
 
-import libsbml
 import numpy as np
 import numpy.random as nprd
 import pandas as pd
-import pyomo
 import pyomo.environ as pe
-import pyutilib.services
 import scipy.linalg as spL
 import simplesbml
 from pyomo.opt import TerminationCondition
-from scipy.linalg import norm
-from scipy.optimize import least_squares
 
 __all__ = """get_nullspace,
     get_stoichiometric_matrix,
@@ -74,7 +69,7 @@ def get_nullspace(A, atol=1e-13, rtol=0):
 
 
 def get_stoichiometric_matrix(model: simplesbml.SbmlModel):
-    """Allocate space for the stoichiometric matrix
+    """Allocate space for the stoichiometric matrix.
     :param model: simplesbml.SbmlModel
     :return stoich: a Dataframe with nrxn columns and nspecies index.
     """
@@ -108,7 +103,7 @@ def get_stoichiometric_matrix(model: simplesbml.SbmlModel):
 
 
 def get_random_initial_variable_concentrations(model: simplesbml.SbmlModel) -> pd.Series:
-    """get vector of initial concnetraions of variable metabolites
+    """get vector of initial concnetraions of variable metabolites.
     :param model: simplesbml.SbmlModel
     :returns: a random vector of initial concentration of size numFloatingSpecies
     """
@@ -118,7 +113,7 @@ def get_random_initial_variable_concentrations(model: simplesbml.SbmlModel) -> p
 
 
 def get_random_initial_fluxes(model: simplesbml.SbmlModel) -> pd.Series:
-    """get vector of initial fluxes
+    """get vector of initial fluxes.
     :param model: simplesbml.SbmlModel
     :returns: a random vector of initial fluxes of size numReactions
     """
@@ -126,7 +121,7 @@ def get_random_initial_fluxes(model: simplesbml.SbmlModel) -> pd.Series:
 
 
 def get_standard_change_in_gibbs_free_energy(model: simplesbml) -> pd.Series:
-    """get standard change in Gibbs free energy
+    """get standard change in Gibbs free energy.
     :param model: simplesbml.SbmlModel
     :returns: pd.Series of change in Gibbs free energy stored as parameters
     """
@@ -137,7 +132,7 @@ def get_standard_change_in_gibbs_free_energy(model: simplesbml) -> pd.Series:
 
 
 def get_initial_beta(nullspace: pd.DataFrame) -> pd.DataFrame:
-    r"""get initial beta matrix, where :math:`y=B\beta` for a :math:`\beta\in\mathbb{R}^m`
+    r"""get initial beta matrix, where :math:`y=B\beta` for a :math:`\beta\in\mathbb{R}^m`.
     :param nullspace: nullspace of stoichiometric matrix
     :returns: random matrix of the size of the nullspace
     """
@@ -145,7 +140,7 @@ def get_initial_beta(nullspace: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_target_log_variable_counts(model: simplesbml.SbmlModel) -> pd.Series:
-    """get target log variable counts
+    """get target log variable counts.
     :param model: simplesbml.SbmlModel
     :returns: pd.Series target log variable counts extracted from species initial amounts.
     """
@@ -159,7 +154,7 @@ def get_target_log_variable_counts(model: simplesbml.SbmlModel) -> pd.Series:
 
 
 def get_fixed_log_counts(model: simplesbml.SbmlModel) -> pd.Series:
-    """Get fixed log counts
+    """Get fixed log counts.
     :param model: simplesbml.SbmlModel
     :returns: Pandas Series containing inital amounts from boundary species
     """
@@ -173,7 +168,7 @@ def get_fixed_log_counts(model: simplesbml.SbmlModel) -> pd.Series:
 
 
 def get_objective_reaction_identifiers(model: simplesbml.SbmlModel) -> pd.Series:
-    """Get objective coefficients of reaction identifiers
+    """Get objective coefficients of reaction identifiers.
     :param model: simplesbml.SbmlModel
     :returns: pandas Series containing the reaction ids with nonzero objective coefficients
     """
@@ -189,6 +184,7 @@ def get_objective_reaction_identifiers(model: simplesbml.SbmlModel) -> pd.Series
 
 def get_params(model: simplesbml.SbmlModel):
     """
+    Get parameters for OptBoltzmann.
     :param sbml: libsbml.SBMLDocument
     :returns n_ini: vector of initial concentrations of variable metabolites.
     :returns y_ini: initial value of transformed variable used in constraints. length = number of net reactions.
@@ -221,6 +217,7 @@ def maximum_entropy_pyomo_relaxed(
     n_ini, y_ini, beta_ini, target_log_vcounts, f_log_counts, S, K, obj_rxn_idx
 ):
     """
+    run OptBoltzmann.
     :param n_ini: vector of initial concentrations of variable metabolites.
     :param y_ini: initial value of transformed variable used in constraints. length = number of net reactions.
     :param beta_ini: length = transformed variable used in constraints. length = size of the null space of S.
@@ -415,38 +412,38 @@ def maximum_entropy_pyomo_relaxed(
     Mb = 1000
 
     def relaxed_reg_cns_upper(m, i):
-        """Relaxed upper regulatory constraints"""
+        """Relaxed upper regulatory constraints."""
         return (m.b[i] - pe.log(m.K[i])) >= m.h[i] - Mb * (m.u[i])
 
     m.rxr_cns_up = pe.Constraint(m.react_idx, rule=relaxed_reg_cns_upper)
 
     def relaxed_reg_cns_lower(m, i):
-        """Relaxed lower regulatory constraints"""
+        """Relaxed lower regulatory constraints."""
         return (m.b[i] - pe.log(m.K[i])) <= m.h[i] + Mb * (1 - m.u[i])
 
     m.rxr_cns_low = pe.Constraint(m.react_idx, rule=relaxed_reg_cns_lower)
 
     def sign_constraint(m, i):
-        """Signed constraints"""
+        """Signed constraints."""
         return (pe.log(m.K[i]) - m.b[i]) * m.y[i] >= 0
 
     m.sign_y_cns = pe.Constraint(m.react_idx, rule=sign_constraint)
 
     def y_sign_relax(m, i):
-        """Relaxed Flux constraints"""
+        """Relaxed Flux constraints."""
         return 2 * m.u[i] - 1 == (m.y[i] / (abs(m.y[i]) + 1e-50))
 
     m.y_sign_relax_cns = pe.Constraint(m.react_idx, rule=y_sign_relax)
 
     # Variable metabolite upper and lower bounds
     def M_upper_cnstrnts(m, i):
-        """Upper constraints on big-M"""
+        """Upper constraints on big-M."""
         return m.VarM[i] <= m.VarM_ubnd[i]
 
     m.VarM_ub_cns = pe.Constraint(m.VarM_idx, rule=M_upper_cnstrnts)
 
     def M_lower_cnstrnts(m, i):
-        """ "Lower constraints on big-M"""
+        """ "Lower constraints on big-M."""
         return m.VarM[i] >= VarM_lbnd
 
     m.VarM_lb_cns = pe.Constraint(m.VarM_idx, rule=M_lower_cnstrnts)
@@ -456,9 +453,12 @@ def maximum_entropy_pyomo_relaxed(
     # Maximum Entropy Production Objective with subset of reactions obj_rxn_idx
 
     def _Obj(m):
-        """ "Set the Objective function
+        r"""Set the Objective function.
+        :param m: container for parameters
+        :returns: :math:`\sum_j y_j`
+        """
 
-        # Maximum Entropy Production Objective with subset of reactions obj_rxn_idx"""
+        # Maximum Entropy Production Objective with subset of reactions obj_rxn_idx
         # return sum( m.y[j]  *  ( pe.log(m.K[j]) + sum( -m.S[(k,j)]*m.VarM[k] for k in m.VarM_idx ) + sum( -m.S[(w,j)]*m.FxdM[w] for w in m.FxdM_idx )    )    for j in m.obj_rxn_idx )
         ##sum_y = sum( m.y[j]  for j in m.obj_rxn_idx )
         ##return sum( (1 - m.y[j]/sum_y)*m.y[j]  for j in m.obj_rxn_idx )
@@ -526,7 +526,7 @@ def maximum_entropy_pyomo_relaxed(
 
 
 def rxn_flux(v_log_counts, f_log_counts, S, K, E_regulation):
-    """Compute initial reaction fluxes"""
+    """Compute initial reaction fluxes."""
     # Flip Stoichiometric Matrix
     S_T = S  # S_T is the Stoich matrix with rows as reactions, columns as metabolites
     S = np.transpose(
