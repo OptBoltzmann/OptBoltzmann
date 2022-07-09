@@ -1,0 +1,31 @@
+test35:
+  stage: test
+  image: python:3.5
+  script:
+    - pip install -r requirements.txt
+    - python -m unittest discover equilibrator_api/tests
+
+test36:
+  stage: test
+  image: python:3.6
+  script:
+    - pip install -r requirements.txt
+    - python -m unittest discover equilibrator_api/tests
+
+test37:
+  stage: test
+  image: python:3.7
+  script:
+    - pip install -r requirements.txt
+    - python -m unittest discover equilibrator_api/tests
+
+pypi:
+  stage: deploy
+  image: python:3.6
+  script:
+    - pip install -r requirements.txt
+    - pip install --upgrade setuptools wheel twine
+    - python setup.py sdist bdist_wheel
+    - twine upload --username=$PYPI_USERNAME --password=$PYPI_PASSWORD --skip-existing dist/*
+  only:
+  - tags
