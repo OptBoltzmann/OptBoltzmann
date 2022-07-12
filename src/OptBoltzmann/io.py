@@ -1,9 +1,10 @@
 import cobra
 import simplesbml
 from cobra.io.sbml import F_REPLACE as f_replace
-
+"""Input and output functions."""
 
 def parse_stoichiometry(side):
+    """Parse a reaction equation."""
     if len(specie.split()) > 1:
         coefficient, metab = specie.split()
         return f_replace["F_SPECIE_REV"](metab), int(coefficient)
@@ -17,6 +18,7 @@ def dataframes2simplesbml(
     Keq: pd.DataFrame,
     compartment_volume,
 ) -> simplesbml.SbmlModel:
+    """Convert the dataframe representation of a flux entropy optimization model to SBML."""
     model = simplesbml.SbmlModel()
     compartments = set(met.split(":")[1] for met in metabolites.index)
     for compartment in compartments:
