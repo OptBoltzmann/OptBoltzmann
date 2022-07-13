@@ -7,9 +7,26 @@ prune tests/.pytest_cache
 prune docs/build
 prune docs/source/api
 
+recursive-include docs *.pdf
 recursive-include docs/source *.py
 recursive-include docs/source *.rst
 recursive-include docs/source *.png
+recursive-include models *.csv
+recursive-include models *.dat
+recursive-include models *.in
+recursive-include models *.ipynb
+recursive-include models *.json
+recursive-include models *.keq
+recursive-include models *.md
+recursive-include models *.npz
+recursive-include models *.pkl
+recursive-include models *.png
+recursive-include models *.py
+recursive-include models *.sh
+recursive-include models *.svg
+recursive-include models *.tsv
+recursive-include models *.txt
+recursive-include models *.yml
 
 include *.lock
 
