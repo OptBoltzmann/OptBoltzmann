@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+"""Input and output functions."""
+
 import cobra
 import simplesbml
 from cobra.io.sbml import F_REPLACE as f_replace
-"""Input and output functions."""
+
 
 def parse_stoichiometry(side):
     """Parse a reaction equation."""
