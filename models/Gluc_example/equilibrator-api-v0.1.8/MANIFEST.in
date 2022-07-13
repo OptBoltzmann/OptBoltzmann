@@ -1,2 +1,0 @@
-recursive-include equilibrator_api/data *.csv *.npz *.json *.tsv
-
