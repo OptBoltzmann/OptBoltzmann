@@ -30,7 +30,8 @@ class TestMaximumEntropy(unittest.TestCase):
     def setUp(self):
         """Load test models"""
         self.sbmlfiles = ["../models/sbml/split_pathway.xml"]
-        self.picklefiles = ["../models/Gluc_example/gluconeogenesis_prot4.pkl"]
+        self.picklefiles = ["../models/01_Glycolysis_Example/gluconeogenesis_prot4.pkl",
+                           ]
         self.cobramodels = [cobra.io.read_sbml_model(sbmlfile) for sbmlfile in self.sbmlfiles]
         self.sbmlmodels = [simplesbml.loadSBMLFile(sbmlfile) for sbmlfile in self.sbmlfiles]
         self.picklemodels = []
