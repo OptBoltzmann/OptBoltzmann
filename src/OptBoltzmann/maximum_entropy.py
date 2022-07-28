@@ -200,19 +200,28 @@ def get_params(model: simplesbml.SbmlModel):
     :returns obj_rxn_idx: indices of the reactions that are included in the objective function. Currently these are the
         reactions forming proteins, RNA and DNA.
     """
-    return dict(
-        n_ini=get_random_initial_variable_concentrations(model),
-        y_ini=get_random_initial_fluxes(model),
-        K=get_standard_change_in_gibbs_free_energy(model),
-        S=get_stoichiometric_matrix(model),
-        nullspace=get_nullspace(
-            S.loc[model.getListOfFloatingSpecies()]
-        ),  # Nullspace of nfloatingspecies x nrxns
-        beta_ini=get_initial_beta(nullspace),
-        target_log_vcounts=get_target_log_variable_counts(model),
-        f_log_counts=get_fixed_log_counts(model),
-        obj_rxn_idx=get_objective_reaction_identifiers(model),
-    )
+
+    n_ini=get_random_initial_variable_concentrations(model)
+    y_ini=get_random_initial_fluxes(model)
+    K=get_standard_change_in_gibbs_free_energy(model)
+    S=get_stoichiometric_matrix(model)
+    nullspace=get_nullspace(
+        S.loc[model.getListOfFloatingSpecies()]
+    )  # Nullspace of nfloatingspecies x nrxns
+    beta_ini=get_initial_beta(nullspace)
+    target_log_vcounts=get_target_log_variable_counts(model)
+    f_log_counts=get_fixed_log_counts(model)
+    obj_rxn_idx=get_objective_reaction_identifiers(model)
+    return dict(n_ini=n_ini,
+                y_ini=y_ini,
+                K=K,
+                S=S,
+                nullspace=nullspace,
+                beta_ini=beta_ini,
+                target_log_vcounts=target_log_vcounts,
+                f_log_counts=f_log_counts,
+                obj_rxn_idx=obj_rxn_idx
+                )
 
 
 def maximum_entropy_pyomo_relaxed(
@@ -536,7 +545,7 @@ def flux_ent_opt(
     solver_opts: dict = dict(
         max_iter=10000, max_cpu_time=800000, tol=1e-7, acceptable_tol=1e-6, linear_solver="mumps"
     ),
-) -> list:
+) -> tuple:
     r"""Flux Entropy Optimization.
 
     :param obj_coefs:  Objective Coefficients.

@@ -4,7 +4,7 @@
 import cobra
 import simplesbml
 from cobra.io.sbml import F_REPLACE as f_replace
-
+import pandas as pd
 
 def parse_stoichiometry(side):
     """Parse a reaction equation."""
